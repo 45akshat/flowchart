@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ai Flowchart</title>
+  <style>
+    body{
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 1%;
+    font-family: Arial, Helvetica, sans-serif;
+}
+form{
+  max-width: 50%;
+  margin-top: 6%;
+}
+
+#cont1{
+    display: flex;
+    align-items: baseline;
+    flex-direction: column;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 30px;
+    justify-content: center;
+    align-items: center;
+
+}
+
+#userInput{
+    margin-left: 10px;
+    font-size: 16px;
+    border: 1px solid black;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 10px;
+    resize: none;
+    border-radius: 10px;
+
+}
+
+#submitBtn{
+    color: rgb(255, 255, 255);
+    background-color: rgb(82, 178, 70);
+    border: 2px solid rgb(82, 178, 70);
+    padding: 10px;
+    margin-top: 4%;
+    width: 80%;
+    border-radius: 10px;
+    /* font-weight: 600; */
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#generate_text{
+  margin: 15px;
+}
+
+.row_center{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto;
+  background-color: #ffffff;
+  padding: 10px;
+}
+.grid-item {
+  background-color: rgba(172, 168, 255, 0.399);
+  border: 2px solid rgba(48, 0, 151, 0.399);
+  border-radius: 15px;
+  padding: 20px;
+  font-size: 10px;
+  text-align: center;
+  white-space: initial;
+  padding-left: 40px;
+  padding-right: 40px;
+  margin: 10px;
+
+  
+}
+
+h3{
+  margin: 0;
+  padding: 0;
+  margin-top: 50px;
+  margin-left: 20px;
+}
+
+  </style>
+</head>
+<body>
+  <h1>Ai Flowchart</h1>
+
+  <form action="/submit" method="POST" onsubmit="return generateContent();">
+    <div id="cont1">
+      <div class="row_center">
+        <label for="userInput">Create a flowchart on topic :</label>
+        <textarea type="text" autofocus id="userInput" name="userInput" rows="1" cols="30" maxlength="200" required placeholder="4-8 words topic"></textarea>
+      </div>
+
+        <button type="submit" id="submitBtn">Generate Diagram</button>
+    
+      </div>
+
+      <div id="result">
+      </div>
+
+      <h3>Example Prompts</h3>
+
+      <div class="grid-container">
+        <div class="grid-item">Ai Finance Assistant, include tech stack details, finance related information, etc.</div>
+        <div class="grid-item">Ai powered chatbot, include tech stacks, flow, etc.</div>
+        <div class="grid-item">Chartered account</div>
+        <div class="grid-item">Exams in india</div>
+
+      </div>
+
+  </form>
+</body>
+
+<script>
+  
+let aioutput
+
+function generateContent(){
+  console.log("clicked")
+
+  document.getElementById("result").innerHTML = `<div id="generate_text"> Generating Diagram...</div>`
+
+
+  
+
+
+const userInput = document.getElementById('userInput').value;
+    
+var xhr = new XMLHttpRequest();
+xhr.open('POST', 'https://ai-server.regem.in/api/ai.php');
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+xhr.onreadystatechange = function() {
+  if (xhr.readyState === 4 && xhr.status === 200) {
+    aioutput = xhr.responseText
+    console.log(aioutput)
+
+
+    if(aioutput.includes("Try Again! or May be Server is Down!")){
+        aioutput = "Try Again, Sorry about it."
+    }
+    else if( aioutput.includes("regem") ){
+        console.log("on")
+        aioutput = aioutput.replaceAll("regem", "openai")
+        
+    }
+    else if( aioutput.includes("Regem") ){
+        console.log("on")
+
+        aioutput = aioutput.replaceAll("Regem", "Openai")
+    }  
+        // After you have the data and have processed it, submit the form
+    document.getElementById("result").innerHTML = `<textarea style="width: fit-content;" type="text" name="output" id="output">`+aioutput+`</textarea>`
+    
+
+    document.querySelector('form').submit();
+  }
+};
+
+xhr.send('input= Use plantUML and create a flowchart on topic ' + encodeURIComponent(userInput));   
+    return false
+}
+
+
+</script>
+
+
+</html>
